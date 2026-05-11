@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>registro</title>
+</head>
+<body>
+    <di>
+        <img src="IMG/logo.png" alt="logo">
+        <a href="index.html">
+            <button id="perfil">iniciar secion</button>
+        </a>
+    </di>
+    <form action="/registro" method="POST">
+        <label>Ingrese su nombre de usuario</label>
+        <br>
+        <input type="text" name="user_name" required>
+        <br><br>
+        <label>Ingrese su contraseña</label>
+        <br>
+        <input type="password" name="user_pass" required>
+        <br><br>
+        <label>Confirme su contraseña</label>
+        <br>
+        <input type="password" name="confirm_pass" required>
+        <br><br>
+        <label>Elige un color para su nombre:</label>
+        <br>
+        <input type="color" name="color" value="#ff0000">
+        <br><br>
+        <button type="submit">Registrarse</button> 
+    </form>
+    <script src="JS/registro.js"></script>
+</body>
+</html>

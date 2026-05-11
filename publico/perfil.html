@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mi perfil</title>
+</head>
+<body>
+    <di>
+        <img src="IMG/logo.png" alt="logo">
+        <a href="chat.html">
+            <button id="chat">ver chat</button>
+        </a>
+        <button id="logout">cerrar sesion</button>
+    </di>
+    <form action="/editar" method="POST"> 
+        <input type="hidden" name="user_id">
+        <label>modififar su nombre de usuario</label>
+        <br>
+        <input type="text" name="user_name" required>
+        <br><br>
+        <label>cambiar contraseña <br> (si no desea cambiar la contraseña deje en blanco este espacio)</label>
+        <br>
+        <input type="password" name="user_pass">
+        <br><br>
+        <label>Elige un color para su nombre:</label>
+        <br>
+        <input type="color" name="color">
+        <br><br>
+        <button type="submit">guardar cambios</button> 
+    </form>
+    <script src="JS/cargar.js"></script>
+    <script src="JS/modificar.js"></script>
+    <script src="JS/logout.js"></script>
+</body>
+</html>

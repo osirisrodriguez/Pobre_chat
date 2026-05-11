@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat en Línea - Mensajes efímeros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chat-container {
+            width: 1000px;
+            max-width: 95%;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        /* Sidebar de usuarios */
+        .users-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .users-header {
+            padding: 20px;
+            background: #243342;
+            border-bottom: 2px solid #3d566e;
+        }
+        
+        .users-header h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .online-count {
+            font-size: 12px;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .users-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            background: #34495e;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .user-item:hover {
+            background: #3d566e;
+        }
+        
+        .user-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            flex: 1;
+        }
+        
+        .current-user-badge {
+            font-size: 10px;
+            background: #2ecc71;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        /* Chat principal */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+        
+        .chat-header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+        
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-fullname {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .chat-status {
+            font-size: 11px;
+            color: #2ecc71;
+        }
+        
+        button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #c0392b;
+            transform: scale(1.02);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        
+        .message-sent {
+            align-self: flex-end;
+            background: #007aff;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-received {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #ddd;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-name {
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .message-text {
+            word-wrap: break-word;
+            font-size: 0.95em;
+        }
+        
+        .message-time {
+            font-size: 0.65em;
+            text-align: right;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .typing-indicator {
+            font-size: 0.8em;
+            color: #666;
+            font-style: italic;
+            padding: 8px 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .system-message {
+            text-align: center;
+            font-size: 0.8em;
+            color: #999;
+            padding: 8px;
+            font-style: italic;
+            background: #f0f0f0;
+            border-radius: 20px;
+            margin: 5px auto;
+            width: fit-content;
+            max-width: 80%;
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #mensaje {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        #mensaje:focus {
+            border-color: #007aff;
+        }
+        
+        .counter {
+            font-size: 0.75em;
+            text-align: right;
+            color: #666;
+        }
+        
+        .counter.warning {
+            color: orange;
+        }
+        
+        .counter.danger {
+            color: red;
+            font-weight: bold;
+        }
+        
+        .emoji-panel {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .emoji-btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.1s;
+        }
+        
+        .emoji-btn:hover {
+            transform: scale(1.1);
+            background: #e0e0e0;
+        }
+        
+        .toggle-emoji {
+            background: #3498db;
+            font-size: 1.2em;
+            padding: 0 15px;
+        }
+        
+        .toggle-emoji:hover {
+            background: #2980b9;
+        }
+        
+        /* Scrollbar personalizado */
+        .chat-messages::-webkit-scrollbar,
+        .users-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track,
+        .users-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb,
+        .users-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .info-message {
+            background: #e3f2fd;
+            color: #1976d2;
+            text-align: center;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 5px auto;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <!-- Sidebar de usuarios conectados -->
+    <div class="users-sidebar">
+        <div class="users-header">
+            <h3>👥 Conectados ahora</h3>
+            <div class="online-count" id="onlineCount">Conectados: 0</div>
+        </div>
+        <div class="users-list" id="usersList">
+            <div class="system-message">Cargando usuarios...</div>
+        </div>
+        <div style="padding: 15px; font-size: 11px; text-align: center; border-top: 1px solid #3d566e; color: #7f8c8d;">
+            💬 Los mensajes NO se guardan
+        </div>
+    </div>
+    
+    <!-- Chat principal -->
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="user-info">
+                <div class="user-color" id="userColorDisplay"></div>
+                <div class="user-details">
+                    <div class="user-fullname" id="userNameDisplay"></div>
+                    <div class="chat-status">🟢 En línea</div>
+                </div>
+            </div>
+            <button id="logoutBtn">🚪 Salir</button>
+        </div>
+        
+        <div class="chat-messages" id="chat">
+            <div class="system-message">🔌 Conectando al servidor...</div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator"></div>
+        
+        <div class="chat-input">
+            <div class="input-group">
+                <input type="text" id="mensaje" placeholder="Escribe tu mensaje... (máx. 200 caracteres)" maxlength="200" autocomplete="off">
+                <button id="toggleEmoji" class="toggle-emoji">😊</button>
+                <button id="enviar">📤 Enviar</button>
+            </div>
+            <div class="counter" id="charCounter">0 / 200</div>
+            <div id="emojiPanel" class="emoji-panel" style="display: none;">
+                <button class="emoji-btn">😊</button>
+                <button class="emoji-btn">😂</button>
+                <button class="emoji-btn">❤️</button>
+                <button class="emoji-btn">👍</button>
+                <button class="emoji-btn">🎉</button>
+                <button class="emoji-btn">🔥</button>
+                <button class="emoji-btn">✨</button>
+                <button class="emoji-btn">💪</button>
+                <button class="emoji-btn">🐱</button>
+                <button class="emoji-btn">🌟</button>
+                <button class="emoji-btn">😢</button>
+                <button class="emoji-btn">😂</button>
+                <button class="emoji-btn">💀</button>
+                <button class="emoji-btn">👻</button>
+                <button class="emoji-btn">🎈</button>
+                <button class="emoji-btn">⚡</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="JS/chat.js"></script>
+</body>
+</html>
