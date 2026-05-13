@@ -25,7 +25,8 @@ function loadUser() {
 
     currentUser.id = userId;
     currentUser.name = userName;
-    currentUser.color = userColor || '#667eea';
+    currentUser.color = userColor || currentUser.defaultcolor;
+
 
     const userNameDisplay = document.getElementById('userNameDisplay');
     const userColorDisplay = document.getElementById('userColorDisplay');
